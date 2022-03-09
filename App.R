@@ -14,7 +14,7 @@ data = read.csv("IPL_Game_Metadata.txt", sep = "|")
 
 
 ## Shiny Dashboard Code
-data$GameYear = format(as.Date(data$GameDate, format = "%Y-%m-%d"), "%Y%")
+data$GameYear = format(as.Date(data$GameDate, format = "%Y-%m-%d"), "%Y")
 
 server = function(input, output){
   
