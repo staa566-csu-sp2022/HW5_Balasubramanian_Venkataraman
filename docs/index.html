@@ -171,10 +171,27 @@ pre code {
 </div>
 
 
-<div id="r-markdown" class="section level2">
-<h2>R Markdown</h2>
-<p>This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <a href="http://rmarkdown.rstudio.com" class="uri">http://rmarkdown.rstudio.com</a>.</p>
-<p>When you click the <strong>Knit</strong> button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:</p>
+<div id="shiny-dashboard-to-visualize-ipl-cricket-data" class="section level2">
+<h2>Shiny Dashboard to Visualize IPL Cricket Data</h2>
+<p>For the shiny dashboard assignment I will be using the same dataset that I used for the table assignment - The IPL cricket data. The goal of this dashboard is to get the users familiarize with the teams along with the number of wins they had over the course of IPL plus how each team fared every year.</p>
+<p>The shiny dashboard will comprise of two pages -</p>
+<ul>
+<li>Analysis by Year - Enable the user to search by Year and see how each teams performed (the number of wins is a criterion to perform this comparison)<br />
+</li>
+<li>Analysis by Teams - Enable the user to search by teams and see how the team performed over the course of IPL</li>
+</ul>
+<p>The dashboard will also be interactive. The users can search by year or teams and the charts in the dashboard pages will display data accordingly per the search criteria</p>
+<p>There is one visuals in the “Analysis by Year” page -</p>
+<ul>
+<li>A horizontal bar chart showing number of wins by all the teams in the selected year</li>
+</ul>
+<p>There are two visuals in the “Analysis by Teams” page -</p>
+<ul>
+<li>A vertical bar chart showing the number of games won by the selected team over the course of IPL<br />
+</li>
+<li>A table showing the details of the dames won by the selected team over the course of IPL</li>
+</ul>
+<p>I hope my cohort will use the shiny dashboard to get themselves familiarized not only with the game of cricket but also the teams that play IPL &amp; the history of IPL as well</p>
 </div>
 <div id="load-packages-and-data" class="section level2">
 <h2>Load Packages and data</h2>
@@ -188,40 +205,11 @@ library(DT)
 library(kableExtra)
 
 #Load IPL cricket data
-data = read.csv(&quot;IPL_Game_Metadata.txt&quot;, sep = &quot;|&quot;)</code></pre>
+data = read.csv(&quot;IPL_Game_Metadata.txt&quot;, sep = &quot;|&quot;)
+data$GameYear = format(as.Date(data$GameDate, format = &quot;%Y-%m-%d&quot;), &quot;%Y%&quot;)</code></pre>
 </div>
-<div id="basic-setup" class="section level2">
-<h2>Basic Setup</h2>
-<pre class="r"><code>#Extract Date from the GameDate
-data$GameYear = format(as.Date(data$GameDate, format = &quot;%Y-%m-%d&quot;), &quot;%Y&quot;)
-
-#Filter out rows with blank winners
-data_winners = data %&gt;%
-  filter(Winner != &quot;&quot;)
-
-#Filter out the temporary teams
-data_winners = data_winners %&gt;%
-  filter(Winner %in% c(&quot;Sunrisers Hyderabad&quot;, &quot;Royal Challengers Bangalore&quot;, &quot;Chennai Super Kings&quot;, &quot;Rajasthan Royals&quot;, &quot;Mumbai Indians&quot;, &quot;Kolkata Knight Riders&quot;, &quot;Kings XI Punjab&quot;, &quot;Delhi Daredevils&quot;, &quot;Delhi Capitals&quot;, &quot;Deccan Chargers&quot;))
-
-bar_chart_winners = ggplot(data = data_winners, mapping = aes(x = Winner)) +
-  geom_bar(mapping = aes(fill = Winner)) +
-  coord_flip() +
-  theme_classic()+
-  scale_fill_brewer(palette = &quot;BrBG&quot;) +
-  xlab(&quot;Number of Wins&quot;) +
-  ylab(&quot;Team Name&quot;)</code></pre>
-<pre class="r"><code>data_game_count = data %&gt;% filter(GameYear &lt;= 2018)
-bar_chart_game_count = ggplot(data = data_game_count, mapping = aes(GameYear))+
-  geom_bar(mapping = aes(fill = GameYear)) +
-  theme_classic()+
-  scale_fill_brewer(palette = &quot;Spectral&quot;) +
-  xlab(&quot;Year&quot;) +
-  ylab(&quot;Number of Games&quot;)</code></pre>
-</div>
-<div id="create-table" class="section level2">
-<h2>Create Table</h2>
-<pre class="r"><code>tbl_data = data %&gt;% select(GameDate, City, HomeTeam,AwayTeam, TossWinner, TossDecision, Winner, PlayerOfMatch)
-#kbl_tbl_data = tbl_data %&gt;% kbl(col.names = c(&quot;Date&quot;, &quot;Venue&quot;, &quot;Home&quot;, &quot;Away&quot;, &quot;Won By&quot;, &quot;Decision&quot;, &quot;Winner&quot;, &quot;Player of the Game&quot; )) %&gt;% add_header_above(c(&quot; &quot;, &quot; &quot;, &quot;Teams&quot;=2, &quot;Toss&quot;=2, &quot; &quot;,&quot; &quot; ))</code></pre>
+<div id="shiny-dashboard-code" class="section level2">
+<h2>Shiny Dashboard Code</h2>
 <pre class="r"><code>server = function(input, output){
   
   ## Bar Chart for Winners
@@ -242,7 +230,7 @@ bar_chart_game_count = ggplot(data = data_game_count, mapping = aes(GameYear))+
   theme_classic()+
   scale_fill_brewer(palette = &quot;BrBG&quot;) +
   xlab(&quot;Number of Wins&quot;) +
-  ylab(&quot;Team Name&quot;)
+  ylab(&quot;Team Name&quot;) 
   
   ggplotly(bar_chart_winners)
   })
@@ -259,7 +247,8 @@ bar_chart_game_count = ggplot(data = data_game_count, mapping = aes(GameYear))+
   theme_classic()+
   scale_fill_brewer(palette = &quot;Spectral&quot;) +
   xlab(&quot;Year&quot;) +
-  ylab(&quot;Number of Games&quot;)
+  ylab(&quot;Number of Games&quot;)+
+  labs(fill = &quot;Year&quot;)
 
     ggplotly(bar_chart_game_count)
   })
@@ -280,8 +269,6 @@ bar_chart_game_count = ggplot(data = data_game_count, mapping = aes(GameYear))+
   })
 }
 
-
-
 ui = dashboardPage(
   skin = &quot;blue&quot;,
   dashboardHeader(
@@ -291,14 +278,15 @@ ui = dashboardPage(
     sidebarMenu(
       textInput(&quot;in_name&quot;, &quot;Team Name&quot;, value = &quot;Chennai Super Kings&quot;),
       textInput(&quot;in_year&quot;,&quot;Year&quot;, value = &quot;2008&quot;),
-      menuItem(&quot;Search by Year&quot;, tabName = &quot;by_year&quot;),
-      menuItem(&quot;Search by Teams&quot;, tabName = &quot;by_teams&quot;)
+      menuItem(&quot;Analysis By Teams&quot;, tabName = &quot;by_teams&quot;),
+      menuItem(&quot;Analysis By Year&quot;, tabName = &quot;by_year&quot;)
+
     )
   ),
   dashboardBody(
     #First Page
     tabItems(
-      tabItem(&quot;by_year&quot;,
+      tabItem(&quot;by_teams&quot;,
               h2(&quot;Games Won by &quot;, textOutput(&quot;in_name1&quot;, inline = TRUE), &quot;in IPL&quot;),
               h3(&quot;Number of Games Won&quot;),
                 box(plotlyOutput(&quot;bar_chart_game_count&quot;), width = 500),
@@ -307,7 +295,7 @@ ui = dashboardPage(
               ),
 
     #Second Page
-    tabItem(&quot;by_teams&quot;,
+    tabItem(&quot;by_year&quot;,
             h2(&quot;Games Won by Teams in Year &quot;, textOutput(&quot;in_name2&quot;, inline = TRUE)),
               box(plotlyOutput(&quot;bar_chart_winners&quot;), width = 500)
     )
