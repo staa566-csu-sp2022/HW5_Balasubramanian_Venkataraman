@@ -1,5 +1,5 @@
-## Load Packages and data  
-```{r warning=FALSE, message=FALSE}
+## Load Packages and data   
+
 library(shiny)
 library(shinydashboard)
 library(ggplot2)
@@ -11,10 +11,9 @@ library(kableExtra)
 
 #Load IPL cricket data
 data = read.csv("IPL_Game_Metadata.txt", sep = "|")
-```
+
 
 ## Shiny Dashboard Code
-```{r}
 
 server = function(input, output){
   
@@ -110,4 +109,3 @@ ui = dashboardPage(
 )
 
 shinyApp(ui,server)
-```
