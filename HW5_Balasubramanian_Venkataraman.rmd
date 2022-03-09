@@ -51,7 +51,7 @@ library(kableExtra)
 
 #Load IPL cricket data
 data = read.csv("IPL_Game_Metadata.txt", sep = "|")
-Data$GameYear = format(as.Date(data$GameDate, format = "%Y-%m-%d"), "%Y%")
+data$GameYear = format(as.Date(data$GameDate, format = "%Y-%m-%d"), "%Y%")
 ```
 
 ## Shiny Dashboard Code
